@@ -1,0 +1,185 @@
+@import "tailwindcss";
+
+/*
+  RCN North America design tokens (PRD §7). Same family as aromeosayi.org (Cormorant Garamond +
+  Manrope, quote and card treatments), different room: light, warm and communal. The RCN orange
+  stays for continuity; "night" is reserved for footage and the conference feature.
+*/
+:root {
+  --bg: #faf7f2;
+  --surface: #ffffff;
+  --surface-alt: #f1ebe2;
+  --ink: #171412;
+  --ink-muted: #6b6158;
+  --accent: #df6526;
+  --accent-deep: #b84a17;
+  --accent-btn: #c4501a; /* button fill: white text at 4.7:1 (raw #DF6526 is only 3.5:1) */
+  --accent-ink: #a8430f; /* orange that passes AA (4.6:1) as small text on ivory */
+  --gold: #c8925f;
+  --night: #14110f;
+  --night-2: #201b17;
+  --on-night: #f6f0e8;
+  --on-night-muted: #b9ada0;
+  --line: rgba(23, 20, 18, 0.1);
+  --line-strong: rgba(23, 20, 18, 0.18);
+  --branch: var(--accent-btn);
+  --gutter: clamp(16px, 4vw, 56px);
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  color-scheme: light;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-alt: var(--surface-alt);
+  --color-ink: var(--ink);
+  --color-muted: var(--ink-muted);
+  --color-accent: var(--accent);
+  --color-accent-deep: var(--accent-deep);
+  --color-accent-ink: var(--accent-ink);
+  --color-gold: var(--gold);
+  --color-night: var(--night);
+  --color-night-2: var(--night-2);
+  --color-on-night: var(--on-night);
+  --color-on-night-muted: var(--on-night-muted);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-branch: var(--branch);
+  --font-display: var(--font-display-face), "Sora", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-text-face), "Source Sans 3", ui-sans-serif, system-ui, sans-serif;
+}
+
+html {
+  background: var(--bg);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 17px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+@media (min-width: 768px) {
+  body { font-size: 18px; }
+}
+
+::selection { background: var(--accent); color: #fff; }
+
+:focus-visible {
+  outline: 2px solid var(--accent-deep);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+.on-night :focus-visible { outline-color: var(--gold); }
+
+.wrap {
+  width: 100%;
+  max-width: 1360px;
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.display {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.02;
+}
+/* Sora has no italic: emphasis is carried by colour, never a faked slant. */
+.display em, .display i { font-style: normal; }
+
+.eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent-ink);
+}
+.on-night .eyebrow { color: var(--gold); }
+
+.prose-rcn p + p { margin-top: 1.1em; }
+
+.btn-accent {
+  background: var(--accent-btn);
+  color: #fff;
+}
+.btn-accent:hover { background: var(--accent-deep); }
+
+/* Reveal on scroll: elements fade/rise in once (see components/motion/Reveal.tsx). */
+.js .reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 900ms var(--ease), transform 900ms var(--ease);
+  transition-delay: var(--d, 0ms);
+}
+.js .reveal.in { opacity: 1; transform: none; }
+
+/* Above-the-fold hero text: a CSS-only rise that never hides the text (keeps LCP fast, works without JS). */
+.rise { animation: rise 1s var(--ease) both; animation-delay: var(--d, 0ms); }
+@keyframes rise { from { transform: translateY(22px); } to { transform: none; } }
+
+/* Network map: branch pins pulse, connection arcs draw in. */
+.pin-pulse {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pin-pulse 2.8s var(--ease) infinite;
+  animation-delay: var(--d, 0ms);
+}
+@keyframes pin-pulse {
+  0% { transform: scale(0.6); opacity: 0.7; }
+  70% { transform: scale(2.6); opacity: 0; }
+  100% { transform: scale(2.6); opacity: 0; }
+}
+.js .arc {
+  stroke-dasharray: var(--len, 600);
+  stroke-dashoffset: var(--len, 600);
+}
+.map-in .arc {
+  animation: draw 1.8s var(--ease) forwards;
+  animation-delay: var(--d, 0ms);
+}
+@keyframes draw { to { stroke-dashoffset: 0; } }
+.js .map-pin { opacity: 0; transform: translateY(-6px); transition: opacity 600ms var(--ease), transform 600ms var(--ease); transition-delay: var(--d, 0ms); }
+.js .map-in .map-pin { opacity: 1; transform: none; }
+
+/* Ticker of next gatherings across branches. */
+.ticker-track { animation: ticker 60s linear infinite; }
+.ticker:hover .ticker-track, .ticker:focus-within .ticker-track { animation-play-state: paused; }
+@keyframes ticker { to { transform: translateX(-50%); } }
+
+.live-dot { animation: live 1.6s ease-in-out infinite; }
+@keyframes live { 50% { opacity: 0.35; } }
+
+/* Gentle hero parallax driven by one CSS variable (--sy, set on scroll). */
+.parallax { transform: translate3d(0, calc(var(--sy, 0) * 0.25px), 0) scale(1.06); will-change: transform; }
+
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+/* Dashed "to confirm" box for anything still waiting on the ministry. */
+.placeholder-box {
+  background-image: repeating-linear-gradient(-45deg, rgba(223, 101, 38, 0.06) 0 10px, transparent 10px 20px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pin-pulse, .ticker-track, .live-dot, .rise { animation: none !important; }
+  .js .reveal { opacity: 1; transform: none; transition: none; }
+  .arc { stroke-dashoffset: 0; animation: none !important; }
+  .js .map-pin { opacity: 1; transform: none; transition: none; }
+  .parallax { transform: none; }
+  html { scroll-behavior: auto; }
+}
+
+/* MapLibre markers (components/map/MapView.tsx) */
+.rcn-marker { position: relative; width: 22px; height: 22px; border: 0; background: none; padding: 0; cursor: pointer; animation: marker-in 600ms var(--ease) both; animation-delay: var(--d, 0ms); }
+.rcn-marker-dot { position: absolute; inset: 4px; border-radius: 999px; background: var(--accent); border: 2.5px solid #fff; box-shadow: 0 4px 10px rgba(184, 74, 23, 0.45); transition: transform 200ms var(--ease); }
+.rcn-marker-pulse { position: absolute; inset: 0; border-radius: 999px; background: var(--accent); opacity: 0.35; animation: pin-pulse 2.6s var(--ease) infinite; }
+.rcn-marker:hover .rcn-marker-dot, .rcn-marker.is-selected .rcn-marker-dot { transform: scale(1.35); background: var(--ink); }
+.rcn-origin { width: 16px; height: 16px; border-radius: 999px; background: #2563eb; border: 3px solid #fff; box-shadow: 0 0 0 6px rgba(37, 99, 235, 0.2); }
+@keyframes marker-in { from { opacity: 0; } to { opacity: 1; } } /* opacity only: MapLibre owns the marker transform */
+.maplibregl-popup-content { font-family: var(--font-sans); border-radius: 12px; padding: 10px 14px; font-size: 14px; }
+@media (prefers-reduced-motion: reduce) { .rcn-marker, .rcn-marker-pulse { animation: none !important; } }
